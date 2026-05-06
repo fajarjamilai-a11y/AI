@@ -11,8 +11,11 @@ from groq import Groq
 # ----------------------------
 import os
 
-GROQ_API_KEY = st.secrets["GROQ"]
-client = Groq(api_key=GROQ_API_KEY)
+@st.cache_resource
+def load_groq():
+    return Groq(api_key=st.secrets["GROK"])
+
+client = load_groq()s
 
 # ----------------------------
 # LOAD MODELS (cached)
