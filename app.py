@@ -9,7 +9,7 @@ from groq import Groq
 # ----------------------------
 # CONFIG
 # ----------------------------
-GROQ_API_KEY = "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"
+GROQ_API_KEY = ""
 
 # ----------------------------
 # LOAD MODELS (cached)
