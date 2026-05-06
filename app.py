@@ -15,7 +15,7 @@ import os
 def load_groq():
     return Groq(api_key=st.secrets["GROK"])
 
-client = load_groq()s
+client = load_groq()
 
 # ----------------------------
 # LOAD MODELS (cached)
