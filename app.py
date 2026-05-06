@@ -89,7 +89,7 @@ Question:
 """
 
         response = client.chat.completions.create(
-            model="model="llama-3.1-8b-instant",  # ✅ FIXED MODEL
+            model="llama-3.1-8b-instant",  # ✅ FIXED MODEL
             messages=[{"role": "user", "content": prompt}],
             temperature=0.3
         )
