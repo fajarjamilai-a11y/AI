@@ -11,12 +11,12 @@ from groq import Groq
 # ----------------------------
 @st.cache_resource
 def load_groq():
-    return Groq(api_key=st.secrets["GROK"])  # your Streamlit secret name
+    return Groq(api_key=st.secrets["GROK"])  # Streamlit secret name
 
 client = load_groq()
 
 # ----------------------------
-# LOAD MODEL
+# LOAD EMBEDDING MODEL
 # ----------------------------
 @st.cache_resource
 def load_model():
@@ -25,7 +25,7 @@ def load_model():
 model = load_model()
 
 # ----------------------------
-# PDF EXTRACTION
+# PDF TEXT EXTRACTION
 # ----------------------------
 def extract_text(file):
     text = ""
@@ -59,7 +59,7 @@ def create_index(chunks):
     index = faiss.IndexFlatL2(dim)
     index.add(embeddings)
 
-    return index, embeddings
+    return index
 
 # ----------------------------
 # RETRIEVAL
@@ -77,7 +77,7 @@ def ask_groq(context, question):
         prompt = f"""
 You are a friendly AI Tutor.
 
-1. Explain the concept in simple words
+1. Explain in simple words
 2. Give a real-world example
 3. Ask a short question to test understanding
 
@@ -89,7 +89,7 @@ Question:
 """
 
         response = client.chat.completions.create(
-            model="llama3-8b-8192",
+            model="llama3-70b-8192",  # ✅ FIXED MODEL
             messages=[{"role": "user", "content": prompt}],
             temperature=0.3
         )
@@ -114,19 +114,26 @@ if uploaded_file:
         st.error("No text found in PDF.")
         st.stop()
 
-    with st.spinner("Processing chunks..."):
+    with st.spinner("Processing document..."):
         chunks = chunk_text(text)
-        index, _ = create_index(chunks)
+        index = create_index(chunks)
 
     st.success("PDF ready!")
 
+    # Input
     query = st.text_input("Ask a question from your PDF:")
 
-    if query:
-        with st.spinner("Thinking..."):
-            retrieved_chunks = retrieve(query, index, chunks)
-            context = "\n".join(retrieved_chunks)
-            answer = ask_groq(context, query)
+    # BUTTON
+    ask_button = st.button("🚀 Ask Question")
 
-        st.markdown("### 📖 Answer")
-        st.write(answer)
+    if ask_button:
+        if query.strip() == "":
+            st.warning("Please type a question first.")
+        else:
+            with st.spinner("Thinking..."):
+                retrieved_chunks = retrieve(query, index, chunks)
+                context = "\n".join(retrieved_chunks)
+                answer = ask_groq(context, query)
+
+            st.markdown("### 📖 Answer")
+            st.write(answer)
