@@ -9,7 +9,10 @@ from groq import Groq
 # ----------------------------
 # CONFIG
 # ----------------------------
-GROQ_API_KEY = ""
+import os
+
+GROQ_API_KEY = st.secrets["GROQ"]
+client = Groq(api_key=GROQ_API_KEY)
 
 # ----------------------------
 # LOAD MODELS (cached)
